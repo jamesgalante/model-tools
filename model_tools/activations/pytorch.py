@@ -54,10 +54,10 @@ class PytorchWrapper:
             layer = self.get_layer(layer_name)
             hook = self.register_hook(layer, layer_name, target_dict=layer_results)
             hooks.append(hook)
-
         self._model(images)
         for hook in hooks:
             hook.remove()
+            
         return layer_results
 
     def get_layer(self, layer_name):
