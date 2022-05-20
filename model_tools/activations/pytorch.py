@@ -54,7 +54,40 @@ class PytorchWrapper:
             layer = self.get_layer(layer_name)
             hook = self.register_hook(layer, layer_name, target_dict=layer_results)
             hooks.append(hook)
+
         self._model(images)
+
+        backward = True
+        if backward:
+            self._model.train()
+
+            b_layer_results = OrderedDict()
+            b_hooks = []
+
+            for layer_name in layer_names:
+                layer = self.get_layer(layer_name)
+                b_hook = self.b_register_hook(layer, layer_name, target_dict=b_layer_results)
+                b_hooks.append(b_hook)
+            
+            # perform the backwards pass to get the gradients
+            y_pred = self._model(images)
+            print(y_pred)
+
+
+            # Make the prediction, the correct prediction
+            
+
+           # loss_fn = torch.nn.MSELoss(reduction='sum')
+           # loss = loss_fn(y_pred, y)
+
+           # self._model.zero_grad()
+           # loss.backward()
+
+
+           # for b_hook in b_hooks:
+           #     b_hook.remove()
+
+
         for hook in hooks:
             hook.remove()
             
@@ -84,6 +117,13 @@ class PytorchWrapper:
             target_dict[name] = PytorchWrapper._tensor_to_numpy(output)
 
         hook = layer.register_forward_hook(hook_function)
+        return hook
+
+    def register_hook(self, layer, layer_name, target_dict):
+        def hook_function(_layer, _input, output, name=layer_name):
+            target_dict[name] = PytorchWrapper._tensor_to_numpy(output)
+
+        hook = layer.register_backward_hook(hook_function)
         return hook
 
     def __repr__(self):
