@@ -71,7 +71,6 @@ class PytorchWrapper:
             
             # perform the backwards pass to get the gradients
             y_pred = self._model(images)
-            print(y_pred)
 
 
             # Make the prediction, the correct prediction
