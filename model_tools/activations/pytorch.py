@@ -58,6 +58,7 @@ class PytorchWrapper:
         self._model(images)
 
         backward = True
+        prob_act = 0.8
         if backward:
             self._model.train()
 
@@ -69,22 +70,30 @@ class PytorchWrapper:
                 b_hook = self.b_register_hook(layer, layer_name, target_dict=b_layer_results)
                 b_hooks.append(b_hook)
             
-            # perform the backwards pass to get the gradients
+            # Calculate the loss based on the largest probability in each evaluation of the model
             y_pred = self._model(images)
+            Guess = torch.argmax(y_pred, axis=1) 
+            loss_fn = torch.nn.CrossEntropyLoss()
+            loss = loss_fn(y_pred, Guess)
+
+            # performs the backwards pass
+            self._model.zero_grad()
+            loss.backward()
+
+            for layer_name in layer_names:
+                activation = layer_results[layer_name][0]
+                gradient = b_layer_results[layer_name][0]
+
+                mask = torch.bernoulli(torch.full(activation.shape, prob_act)).int()
+                reverse_mask = torch.ones(activation.shape).int() - mask
+
+                result = activation * mask + gradient * reverse_mask
+
+                layer_results[layer_name] = result
 
 
-            # Make the prediction, the correct prediction
-            
-
-           # loss_fn = torch.nn.MSELoss(reduction='sum')
-           # loss = loss_fn(y_pred, y)
-
-           # self._model.zero_grad()
-           # loss.backward()
-
-
-           # for b_hook in b_hooks:
-           #     b_hook.remove()
+            for b_hook in b_hooks:
+                b_hook.remove()
 
 
         for hook in hooks:
