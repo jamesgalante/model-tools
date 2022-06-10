@@ -11,7 +11,7 @@ SUBMODULE_SEPARATOR = '.'
 
 
 class PytorchWrapper:
-    def __init__(self, model, preprocessing, identifier=None, *args, **kwargs):
+    def __init__(self, model, preprocessing, identifier=None, backward=False, *args, **kwargs):
         import torch
         logger = logging.getLogger(fullname(self))
         self._device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -22,6 +22,7 @@ class PytorchWrapper:
         self._extractor = self._build_extractor(
             identifier=identifier, preprocessing=preprocessing, get_activations=self.get_activations, *args, **kwargs)
         self._extractor.insert_attrs(self)
+        self.backward = backward
 
     def _build_extractor(self, identifier, preprocessing, get_activations, *args, **kwargs):
         return ActivationsExtractorHelper(
@@ -57,9 +58,8 @@ class PytorchWrapper:
 
         self._model(images)
 
-        backward = True
         prob_act = 0.8
-        if backward:
+        if self.backward:
             self._model.train()
 
             b_layer_results = OrderedDict()
