@@ -89,8 +89,7 @@ class PytorchWrapper:
 
                 result = activation * mask + gradient * reverse_mask
 
-                # Set equal to result
-                layer_results[layer_name] = 0
+                layer_results[layer_name] = result
 
 
             for b_hook in b_hooks:
@@ -100,7 +99,7 @@ class PytorchWrapper:
         for hook in hooks:
             hook.remove()
             
-        return layer_results
+        return 0
 
     def get_layer(self, layer_name):
         if layer_name == 'logits':
