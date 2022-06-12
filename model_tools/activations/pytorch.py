@@ -42,6 +42,7 @@ class PytorchWrapper:
         return self._extractor(*args, **kwargs)
 
     def get_activations(self, images, layer_names):
+        return 0
         import torch
         from torch.autograd import Variable
         images = [torch.from_numpy(image) for image in images]
