@@ -89,7 +89,8 @@ class PytorchWrapper:
 
                 result = activation * mask + gradient * reverse_mask
 
-                layer_results[layer_name] = result
+                # Set equal to result
+                layer_results[layer_name] = 0
 
 
             for b_hook in b_hooks:
