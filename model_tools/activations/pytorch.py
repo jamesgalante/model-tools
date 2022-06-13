@@ -128,11 +128,11 @@ class PytorchWrapper:
         hook = layer.register_forward_hook(hook_function)
         return hook
 
-    def register_hook(self, layer, layer_name, target_dict):
+    def b_register_hook(self, layer, layer_name, target_dict):
         def hook_function(_layer, _input, output, name=layer_name):
             target_dict[name] = PytorchWrapper._tensor_to_numpy(output)
 
-        hook = layer.register_backward_hook(hook_function)
+        hook = layer.register_full_backward_hook(hook_function)
         return hook
 
     def __repr__(self):
