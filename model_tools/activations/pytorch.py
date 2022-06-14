@@ -83,8 +83,8 @@ class PytorchWrapper:
             loss.backward()
 
             for layer_name in layer_names:
-                activation = layer_results[layer_name][0]
-                gradient = b_layer_results[layer_name][0]
+                activation = layer_results[layer_name]
+                gradient = b_layer_results[layer_name]
 
                 mask = torch.bernoulli(torch.full(activation.shape, self.prob_act)).int()
                 reverse_mask = torch.ones(activation.shape).int() - mask
