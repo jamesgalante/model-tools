@@ -1,3 +1,4 @@
+from audioop import reverse
 import logging
 from collections import OrderedDict
 
@@ -89,7 +90,9 @@ class PytorchWrapper:
                 reverse_mask = torch.ones(activation.shape).int() - mask
 
                 assert gradient.shape == activation.shape
-                result = activation * mask.cpu().detach().numpy() + gradient * reverse_mask.cpu().detach().numpy()
+                mask = mask.cpu().detach().numpy()
+                reverse_mask = reverse_mask.cpu().detach().numpy()
+                result = activation * mask + gradient * reverse_mask
 
                 layer_results[layer_name] = result
 
