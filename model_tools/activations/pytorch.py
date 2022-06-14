@@ -94,6 +94,8 @@ class PytorchWrapper:
                 reverse_mask = reverse_mask.cpu().detach().numpy()
                 result = activation * mask + gradient * reverse_mask
 
+                result = result.astype(np.float32)
+
                 layer_results[layer_name] = result
 
 
