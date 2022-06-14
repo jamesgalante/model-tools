@@ -88,7 +88,7 @@ class PytorchWrapper:
                 mask = torch.bernoulli(torch.full(activation.shape, self.prob_act)).int()
                 reverse_mask = torch.ones(activation.shape).int() - mask
 
-                result = activation * mask + gradient * reverse_mask
+                result = activation * mask.cpu().detach().numpy() + gradient * reverse_mask.cpu().detach().numpy()
 
                 layer_results[layer_name] = result
 
